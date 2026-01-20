@@ -1,0 +1,18 @@
+
+Metric output format: x/y
+    x = unsafe code used by the build
+    y = total unsafe code found in the crate
+
+Symbols:
+    :) = No `unsafe` usage found, declares #![forbid(unsafe_code)]
+    ?  = No `unsafe` usage found, missing #![forbid(unsafe_code)]
+    !  = `unsafe` usage found
+
+Functions  Expressions  Impls  Traits  Methods  Dependency
+
+3/8        60/273       0/0    0/0     0/0      !  getrandom 0.4.0-rc.0
+0/0        0/0          0/0    0/0     0/0      ?  ├── cfg-if 1.0.4
+0/90       34/687       0/2    0/0     8/92     !  └── libc 0.2.178
+
+3/98       94/960       0/2    0/0     8/92
+

@@ -1,0 +1,19 @@
+
+Metric output format: x/y
+    x = unsafe code used by the build
+    y = total unsafe code found in the crate
+
+Symbols:
+    :) = No `unsafe` usage found, declares #![forbid(unsafe_code)]
+    ?  = No `unsafe` usage found, missing #![forbid(unsafe_code)]
+    !  = `unsafe` usage found
+
+Functions  Expressions  Impls  Traits  Methods  Dependency
+
+0/0        0/0          0/0    0/0     0/0      :) rand_chacha 0.10.0-rc.6
+2/2        632/680      0/0    0/0     17/25    !  ├── ppv-lite86 0.2.21
+5/5        413/413      40/40  23/23   39/39    !  │   └── zerocopy 0.8.31
+0/0        0/0          0/0    0/0     0/0      ?  └── rand_core 0.10.0-rc-3
+
+7/7        1045/1093    40/40  23/23   56/64
+

@@ -1,0 +1,25 @@
+
+Metric output format: x/y
+    x = unsafe code used by the build
+    y = total unsafe code found in the crate
+
+Symbols:
+    :) = No `unsafe` usage found, declares #![forbid(unsafe_code)]
+    ?  = No `unsafe` usage found, missing #![forbid(unsafe_code)]
+    !  = `unsafe` usage found
+
+Functions  Expressions  Impls  Traits  Methods  Dependency
+
+0/0        0/0          0/0    0/0     0/0      ?  thiserror 2.0.18
+0/0        0/0          0/0    0/0     0/0      ?  └── thiserror-impl 2.0.18
+0/0        14/14        0/0    0/0     3/3      !      ├── proc-macro2 1.0.105
+0/0        4/4          0/0    0/0     0/0      !      │   └── unicode-ident 1.0.22
+0/0        0/0          0/0    0/0     0/0      ?      ├── quote 1.0.43
+0/0        14/14        0/0    0/0     3/3      !      │   └── proc-macro2 1.0.105
+0/0        87/87        3/3    0/0     2/2      !      └── syn 2.0.114
+0/0        14/14        0/0    0/0     3/3      !          ├── proc-macro2 1.0.105
+0/0        0/0          0/0    0/0     0/0      ?          ├── quote 1.0.43
+0/0        4/4          0/0    0/0     0/0      !          └── unicode-ident 1.0.22
+
+0/0        105/105      3/3    0/0     5/5
+

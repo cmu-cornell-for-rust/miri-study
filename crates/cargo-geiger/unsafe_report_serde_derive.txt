@@ -1,0 +1,24 @@
+
+Metric output format: x/y
+    x = unsafe code used by the build
+    y = total unsafe code found in the crate
+
+Symbols:
+    :) = No `unsafe` usage found, declares #![forbid(unsafe_code)]
+    ?  = No `unsafe` usage found, missing #![forbid(unsafe_code)]
+    !  = `unsafe` usage found
+
+Functions  Expressions  Impls  Traits  Methods  Dependency
+
+0/0        0/0          0/0    0/0     0/0      ?  serde_derive 1.0.228
+0/0        14/14        0/0    0/0     3/3      !  ├── proc-macro2 1.0.101
+0/0        4/4          0/0    0/0     0/0      !  │   └── unicode-ident 1.0.19
+0/0        0/0          0/0    0/0     0/0      ?  ├── quote 1.0.40
+0/0        14/14        0/0    0/0     3/3      !  │   └── proc-macro2 1.0.101
+0/0        88/88        3/3    0/0     2/2      !  └── syn 2.0.106
+0/0        14/14        0/0    0/0     3/3      !      ├── proc-macro2 1.0.101
+0/0        0/0          0/0    0/0     0/0      ?      ├── quote 1.0.40
+0/0        4/4          0/0    0/0     0/0      !      └── unicode-ident 1.0.19
+
+0/0        106/106      3/3    0/0     5/5
+
