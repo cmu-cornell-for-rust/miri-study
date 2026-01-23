@@ -19,3 +19,10 @@
     - socket2
     - syn
     - unicode-ident
+
+- Test the following profilers ([pros and cons](profiling/profiler-pros-cons.md)):
+- [x] [measureme](https://github.com/rust-lang/measureme/blob/master/crox/README.md)
+- [x] [DHAT](https://valgrind.org/docs/manual/dh-manual.html)
+- [ ] [heaptrack](https://github.com/KDE/heaptrack)
+- [ ] [Gungraun](https://github.com/gungraun/gungraun)
+- [ ] [Coz](https://github.com/plasma-umass/coz)
