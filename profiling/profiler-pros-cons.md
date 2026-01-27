@@ -38,7 +38,8 @@ unset MIRIFLAGS
 ### Cons
 - [Can only be run on Rust binaries](https://github.com/KDE/heaptrack?tab=readme-ov-file#running-heaptrack-on-a-rust-binary), (miri doesn't generate a binary)
 - Results can only be visualized with their GUI app, which is [unable to compile on Mac anymore](https://www.mail-archive.com/kde-bugs-dist@kde.org/msg993204.html)
-    - todo: Either must build an older version that uses `kde-mac/kde/kf5` or use a tool like `XQuartz` to open a window in docker
+    - older versions have annoying deprecated build dependencies
+    - todo: run in a VM or use a tool like `XQuartz` to open a window in docker
 
 ## bytehound
 
@@ -48,3 +49,14 @@ unset MIRIFLAGS
 
 ### Cons
 - not supported on aarch64
+- unclear if it only supports Rust binaries or not
+- todo: run in a VM
+
+## Gungran
+
+### Pros
+- Leverages multiple different profilers (including DHAT)
+- Specific to Rust
+
+### Cons
+- Only runs on benchmarks ([unsupported by Miri](https://github.com/bheisler/criterion.rs/issues/778))

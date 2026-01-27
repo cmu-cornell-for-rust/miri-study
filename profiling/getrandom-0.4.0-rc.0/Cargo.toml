@@ -143,3 +143,9 @@ check-cfg = [
     "cfg(getrandom_test_netbsd_fallback)",
     'cfg(target_os, values("cygwin"))',
 ]
+
+[profile.bench]
+debug = true
+
+[dev-dependencies]
+gungraun = "0.17.0"
