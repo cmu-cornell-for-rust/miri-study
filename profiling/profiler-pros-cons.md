@@ -60,3 +60,15 @@ unset MIRIFLAGS
 
 ### Cons
 - Only runs on benchmarks ([unsupported by Miri](https://github.com/bheisler/criterion.rs/issues/778))
+
+## Callgrind
+
+### Pros
+- Generates a call graph for a program's call history
+- Built in to Valgrind (easy setup)
+    - Same commands as DHAT, just replace `--tool=dhat` with `--tool=callgrind`
+- Working and intuitive GUI, [Cachegrind](https://apps.kde.org/kcachegrind/), that displays function call size relative to instruction read event counts
+    - `brew install qcachegrind`
+
+### Cons
+- Much slower than DHAT

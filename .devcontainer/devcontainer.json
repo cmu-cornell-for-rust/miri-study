@@ -6,7 +6,17 @@
         "context": ".."
     },
     
-    // Add Docker capabilities for bytehound
+    // Memory and resource limits
+    "hostRequirements": {
+        "memory": "24gb"
+    },
+    
+    "runArgs": [
+        "--memory=24g",
+        "--memory-swap=24g",
+        "--shm-size=2g"
+    ],
+    
     "capAdd": [
         "SYS_PTRACE",
         "SYS_ADMIN"
@@ -14,25 +24,19 @@
     "securityOpt": [
         "seccomp=unconfined"
     ],
-    
-    // Mount SSH folder and X11 socket
     "mounts": [
         "source=${localEnv:HOME}/.ssh,target=/root/.ssh,readonly,type=bind",
         "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind"
     ],
-    
-    // Environment variables
     "remoteEnv": {
         "PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}",
         "DISPLAY": "${localEnv:DISPLAY}"
     },
-    
     "features": {
         "ghcr.io/devcontainers/features/github-cli:1": {
             "version": "latest"
         }
     },
-    
     "customizations": {
         "vscode": {
             "settings": {},

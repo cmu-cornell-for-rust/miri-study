@@ -25,5 +25,6 @@ Test the following profilers ([pros and cons](profiling/profiler-pros-cons.md)):
 - [x] [DHAT](https://valgrind.org/docs/manual/dh-manual.html)
 - [x] [heaptrack](https://github.com/KDE/heaptrack)
 - [x] [Bytehound](https://github.com/koute/bytehound)
-- [ ] [Gungraun](https://github.com/gungraun/gungraun)
+- [x] [Gungraun](https://github.com/gungraun/gungraun)
+- [x] [Callgrind](https://valgrind.org/docs/manual/cl-manual.html)
 - [ ] [Coz](https://github.com/plasma-umass/coz)
