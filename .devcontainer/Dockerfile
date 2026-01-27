@@ -1,6 +1,8 @@
 FROM ubuntu:25.04 AS base
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
+    libunwind8 \
+    libunwind-dev \
     build-essential \
     cmake \
     clang \
@@ -16,6 +18,10 @@ RUN apt-get update && apt-get install -y \
     gdb \
     r-base \
     valgrind \
+    elfutils \
+    libdw-dev \
+    libelf-dev \
+    libboost-all-dev \
     && rm -rf /var/lib/apt/lists/*
 RUN update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100 \
     && update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++ 100

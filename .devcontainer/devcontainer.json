@@ -1,29 +1,45 @@
 {
-	"name": "Miri-Study",
-	"build": {
-		"dockerfile": "Dockerfile",
-		"target": "base",
-		"context": ".."
-	},
-	// Mount SSH folder
-	"mounts": [
-		"source=${localEnv:HOME}/.ssh,target=/root/.ssh,readonly,type=bind"
-	],
-	"remoteEnv": {
-		"PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}"
-	},
-	"features": {
-		"ghcr.io/devcontainers/features/github-cli:1": {
-			"version": "latest"
-		}
-	},
-	"customizations": {
-		"vscode": {
-			"settings": {},
-			"extensions": [
-				"rust-lang.rust-analyzer"
-				// ,"ms-vscode.cpptools"
-			]
-		}
-	}
+    "name": "Miri-Study",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "target": "base",
+        "context": ".."
+    },
+    
+    // Add Docker capabilities for bytehound
+    "capAdd": [
+        "SYS_PTRACE",
+        "SYS_ADMIN"
+    ],
+    "securityOpt": [
+        "seccomp=unconfined"
+    ],
+    
+    // Mount SSH folder and X11 socket
+    "mounts": [
+        "source=${localEnv:HOME}/.ssh,target=/root/.ssh,readonly,type=bind",
+        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind"
+    ],
+    
+    // Environment variables
+    "remoteEnv": {
+        "PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}",
+        "DISPLAY": "${localEnv:DISPLAY}"
+    },
+    
+    "features": {
+        "ghcr.io/devcontainers/features/github-cli:1": {
+            "version": "latest"
+        }
+    },
+    
+    "customizations": {
+        "vscode": {
+            "settings": {},
+            "extensions": [
+                "rust-lang.rust-analyzer"
+                // ,"ms-vscode.cpptools"
+            ]
+        }
+    }
 }
