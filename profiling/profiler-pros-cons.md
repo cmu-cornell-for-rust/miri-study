@@ -72,3 +72,4 @@ unset MIRIFLAGS
 
 ### Cons
 - Much slower than DHAT
+- Runs out of memory

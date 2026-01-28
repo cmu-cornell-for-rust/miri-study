@@ -1,49 +1,32 @@
 {
-    "name": "Miri-Study",
-    "build": {
-        "dockerfile": "Dockerfile",
-        "target": "base",
-        "context": ".."
-    },
-    
-    // Memory and resource limits
-    "hostRequirements": {
-        "memory": "24gb"
-    },
-    
-    "runArgs": [
-        "--memory=24g",
-        "--memory-swap=24g",
-        "--shm-size=2g"
-    ],
-    
-    "capAdd": [
-        "SYS_PTRACE",
-        "SYS_ADMIN"
-    ],
-    "securityOpt": [
-        "seccomp=unconfined"
-    ],
-    "mounts": [
-        "source=${localEnv:HOME}/.ssh,target=/root/.ssh,readonly,type=bind",
-        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind"
-    ],
-    "remoteEnv": {
-        "PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}",
-        "DISPLAY": "${localEnv:DISPLAY}"
-    },
-    "features": {
-        "ghcr.io/devcontainers/features/github-cli:1": {
-            "version": "latest"
-        }
-    },
-    "customizations": {
-        "vscode": {
-            "settings": {},
-            "extensions": [
-                "rust-lang.rust-analyzer"
-                // ,"ms-vscode.cpptools"
-            ]
-        }
-    }
+	"name": "Miri-Study",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"target": "base",
+		"context": ".."
+	},
+      "runArgs": [
+    "--memory=32gb"
+  ],
+	// Mount SSH folder
+	"mounts": [
+		"source=${localEnv:HOME}/.ssh,target=/root/.ssh,readonly,type=bind"
+	],
+	"remoteEnv": {
+		"PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}"
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/github-cli:1": {
+			"version": "latest"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"settings": {},
+			"extensions": [
+				"rust-lang.rust-analyzer"
+				// ,"ms-vscode.cpptools"
+			]
+		}
+	}
 }
