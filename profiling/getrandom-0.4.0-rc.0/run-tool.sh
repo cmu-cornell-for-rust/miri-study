@@ -19,6 +19,7 @@ valgrind --tool="$TOOL" \
 --trace-children-skip-by-arg='--crate-type','-vV','--print','--format-version','--error-format=json' \
 --"$TOOL"-out-file="$TOOL.out.miri.%p"  \
 cargo miri test
+unset MIRIFLAGS
 
 # run with treeborrows miri
 export MIRIFLAGS="-Zmiri-disable-data-race-detector -Zmiri-disable-validation -Zmiri-tree-borrows"
@@ -28,3 +29,4 @@ valgrind --tool="$TOOL" \
 --trace-children-skip-by-arg='--crate-type','-vV','--print','--format-version','--error-format=json' \
 --"$TOOL"-out-file="$TOOL.out.miri-tree.%p"  \
 cargo miri test
+unset MIRIFLAGS

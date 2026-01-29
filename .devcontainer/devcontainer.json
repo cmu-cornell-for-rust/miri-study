@@ -24,7 +24,8 @@
 		"vscode": {
 			"settings": {},
 			"extensions": [
-				"rust-lang.rust-analyzer"
+				"rust-lang.rust-analyzer",
+				"ms-python.python"
 				// ,"ms-vscode.cpptools"
 			]
 		}
