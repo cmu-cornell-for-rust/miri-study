@@ -12,7 +12,7 @@ PROJECT_DIR="$2"
 cd "$PROJECT_DIR" || { echo "Error: Cannot cd to $PROJECT_DIR"; exit 1; }
 
 # default run
-valgrind --tool="$TOOL" --trace-children=yes --trace-children-skip=*/rustc --trace-children-skip-by-arg='--crate-type' cargo test
+valgrind --tool="$TOOL" --trace-children=yes --trace-children-skip=*/rustc,*/build-script-build --trace-children-skip-by-arg='--crate-type' cargo test
 
 # run with miri
 export MIRIFLAGS="-Zmiri-disable-data-race-detector -Zmiri-disable-validation"
