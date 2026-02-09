@@ -32,5 +32,5 @@ RUN rustup install nightly
 RUN rustup default nightly
 RUN cargo install cargo-download
 RUN cargo install --locked cargo-geiger
-RUN rustup component add miri
+RUN rustup component add miri #TODO: add our fork of miri
 RUN rustup component add rust-src
