@@ -90,6 +90,10 @@ def main():
         else:
             miri_cmd = ""
         for binary, tests in bin_tests.items():
+            if binary == "lib":
+                bin_arg = "--lib"
+            else:
+                bin_arg = f"--test {binary}"
             for test_name in tests:
                 safe_name = test_name.replace("::", "-")
                 output_file = output_dir / f"{name}.{binary}.{safe_name}.{tool}.out"
@@ -99,7 +103,7 @@ def main():
                             --trace-children-skip={skip} \
                             --trace-children-skip-by-arg={skip_by_arg} \
                             --{tool}-out-file={output_file}.%p \
-                            cargo {miri_cmd} test --test {binary} {test_name} -- --exact"""
+                            cargo {miri_cmd} test {bin_arg} {test_name} -- --exact"""
                 result = run_command(cmd, str(project_dir), output_dir)
                 
                 # Extract timestamp from output
