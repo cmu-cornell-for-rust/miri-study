@@ -30,12 +30,14 @@ struct CSVLine {
     total_bytes: u64,
     insert_allocation_points: usize,
     insert_allocation_bytes: u64,
-    b_reborrow_points: usize,
-    b_reborrow_bytes: u64,
+    b_retag_points: usize,
+    b_retag_bytes: u64,
     eval_callee_and_args_points: usize,
     eval_callee_and_args_bytes: u64,
     provenance_gc_points: usize,
     provenance_gc_bytes: u64,
+    perform_transition_points: usize,
+    perform_transition_bytes: u64,
     mirimachine_points: usize,
     mirimachine_bytes: u64,
 }
@@ -73,7 +75,7 @@ impl From<&str> for TestParams {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let outputs_dir = "/workspaces/miri-study/profiling/socket2-outputs/dhat";
+    let outputs_dir = "/workspaces/miri-study/profiling/libc-outputs/dhat";
     process_dhat_folder(outputs_dir)?;
     Ok(())
 }
@@ -194,9 +196,10 @@ fn log_fn_stats(dhat: &Dhat, timestamp_params: TimestampRecord) -> Result<CSVLin
     println!("Total memory points: {} ({:.2} MB)", total_points, total_bytes as f64 / 1_048_576.0);
     
     let (allocations, alloc_bytes) = get_fn_stats(&points, &"insert_allocation".to_string());
-    let (reborrow_retags, reborrow_bytes) = get_fn_stats(&points, &"b_reborrow".to_string());
+    let (retag_retags, retag_bytes) = get_fn_stats(&points, &"b_retag".to_string());
     let (eval_callee_args, eval_callee_bytes) = get_fn_stats(&points, &"eval_callee_and_args".to_string());
     let (prov_gc, prov_gc_bytes) = get_fn_stats(&points, &"provenance_gc".to_string());
+    let (perform_transition, perform_transition_bytes) = get_fn_stats(&points, &"perform_transition".to_string());
     let (miri_machines, miri_bytes) = get_fn_stats(&points, &"MiriMachine".to_string());
     
     let csv_line = CSVLine {
@@ -208,12 +211,14 @@ fn log_fn_stats(dhat: &Dhat, timestamp_params: TimestampRecord) -> Result<CSVLin
         total_bytes,
         insert_allocation_points: allocations.len(),
         insert_allocation_bytes: alloc_bytes,
-        b_reborrow_points: reborrow_retags.len(),
-        b_reborrow_bytes: reborrow_bytes,
+        b_retag_points: retag_retags.len(),
+        b_retag_bytes: retag_bytes,
         eval_callee_and_args_points: eval_callee_args.len(),
         eval_callee_and_args_bytes: eval_callee_bytes,
         provenance_gc_points: prov_gc.len(),
         provenance_gc_bytes: prov_gc_bytes,
+        perform_transition_points: perform_transition.len(),
+        perform_transition_bytes: perform_transition_bytes,
         mirimachine_points: miri_machines.len(),
         mirimachine_bytes: miri_bytes,
     };
