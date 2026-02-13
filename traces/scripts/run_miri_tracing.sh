@@ -43,12 +43,12 @@ for crate in "${crates[@]}"; do
     cargo clean > /dev/null 2>&1
     cargo miri test --no-run --quiet > /dev/null 2>> "../$ERR_LOG"
     TREE_TIME=$(/usr/bin/time -f "%e" -o /dev/stdout \
-	sh -c 'cargo miri test --quiet > /dev/null 2>&1 || true')
+        sh -c 'cargo miri test --quiet > /dev/null 2>&1 || true')
 
     if [ -e trace*.json ]; then
         mkdir -p traces
         mv trace*.json traces/
-        tar -czf traces.tar.gz traces
+        tar -czf "${crate}-traces.tar.gz" traces
         rm -rf traces
     fi
 
