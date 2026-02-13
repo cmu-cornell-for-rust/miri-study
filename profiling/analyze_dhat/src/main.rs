@@ -201,7 +201,7 @@ fn log_fn_stats(dhat: &Dhat, timestamp_params: TimestampRecord) -> Result<CSVLin
     let (prov_gc, prov_gc_bytes) = get_fn_stats(&points, &"provenance_gc".to_string());
     let (perform_transition, perform_transition_bytes) = get_fn_stats(&points, &"perform_transition".to_string());
     let (miri_machines, miri_bytes) = get_fn_stats(&points, &"MiriMachine".to_string());
-    
+
     let csv_line = CSVLine {
         config: timestamp_params.config,
         file: timestamp_params.file,
