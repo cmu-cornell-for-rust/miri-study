@@ -82,7 +82,7 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
 
     bin_tests = get_tests(project_dir)
-    test_timestamps = []  # Changed to list of dicts for CSV
+    test_timestamps = []
     
     def iterate_tests(name, miri, skip, skip_by_arg, miri_flags):
         if miri:
