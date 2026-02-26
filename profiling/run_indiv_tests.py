@@ -79,8 +79,7 @@ def main():
         sys.exit(1)
 
     script_dir = Path(__file__).parent
-    folder_name = project_dir.name.split('-')[0] + "-outputs"
-    output_dir = script_dir / folder_name / tool
+    output_dir = script_dir / "outputs" / project_dir.name / tool
     output_dir.mkdir(parents=True, exist_ok=True)
 
     bin_tests = get_tests(project_dir)
