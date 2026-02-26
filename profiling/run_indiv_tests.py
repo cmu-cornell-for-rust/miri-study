@@ -17,7 +17,7 @@ def run_command(cmd, cwd, output_dir):
     """Run a command with output redirected to the specified directory."""
     result = subprocess.run(
         cmd, 
-        cwd=cwd, 
+        cwd=str(cwd), 
         shell=True, 
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -67,6 +67,8 @@ def main():
         cmd_line = 5
     elif tool == "callgrind":
         cmd_line = 4
+    elif tool == "perf":
+        pass
     else:
         print(f"Unknown tool: {tool}")
         sys.exit(1)
@@ -96,54 +98,82 @@ def main():
                 bin_arg = f"--test {binary}"
             for test_name in tests:
                 safe_name = test_name.replace("::", "-")
-                output_file = output_dir / f"{name}.{binary}.{safe_name}.{tool}.out"
-                cmd = f"""{miri_flags} valgrind --tool={tool} \
-                            --time-stamp=yes \
-                            --trace-children=yes \
-                            --trace-children-skip={skip} \
-                            --trace-children-skip-by-arg={skip_by_arg} \
-                            --{tool}-out-file={output_file}.%p \
-                            cargo {miri_cmd} test {bin_arg} {test_name} -- --exact"""
-                result = run_command(cmd, str(project_dir), output_dir)
+                output_file = output_dir / f"{name}.{binary}.{safe_name}.{tool}"
+                if tool.lower() == "perf":
+                    cmd = f"""{miri_flags} perf record \
+                            --call-graph dwarf \
+                            -F 99 \
+                            -e cycles \
+                            -o {output_file}.dat \
+                            -- cargo {miri_cmd} test {bin_arg} {test_name} -- --exact"""
+                    result = run_command(cmd, project_dir, output_dir)
+
+                    duration_string = run_command(
+                        f"perf report --header-only -i {output_file}.dat | grep 'sample duration'", 
+                        output_dir, 
+                        output_dir
+                    ).stdout.strip()
+                    if re.match(r'#\s+sample duration\s*:\s+[\d.]+\s+ms', duration_string):
+                        duration_ms = duration_string.split()[4]
+                        duration_s = float(duration_ms) / 1000
+                        test_timestamps.append({
+                            'config': name,
+                            'file': binary,
+                            'testname': test_name,
+                            'timestamp': duration_s
+                        })
+                        print(f"{tool} {name}: {binary}::{test_name} finished in: {duration_s}s")
+                    else:
+                        print(f"Duration string did not match expected format: {duration_string}")
+
+                else:
+                    cmd = f"""{miri_flags} valgrind --tool={tool} \
+                                --time-stamp=yes \
+                                --trace-children=yes \
+                                --trace-children-skip={skip} \
+                                --trace-children-skip-by-arg={skip_by_arg} \
+                                --{tool}-out-file={output_file}.out.%p \
+                                cargo {miri_cmd} test {bin_arg} {test_name} -- --exact"""
+                    result = run_command(cmd, project_dir, output_dir)
+
                 
-                # Extract timestamp from output
-                lines = result.stdout.splitlines()
-                for i, line in enumerate(lines):
-                    if re.search(r'==\d{2}:\d{2}:\d{2}:\d{2}\.\d+ +\d+== (Total:|Events)', line):
-                        if i > 0: 
-                            timestamp_line = lines[i - 1]
-                            timestamp_match = re.search(r'==(\d{2}:\d{2}:\d{2}:\d{2}\.\d{3})', timestamp_line)
-                            if timestamp_match:
-                                timestamp = timestamp_match.group(1)
-                                test_timestamps.append({
-                                    'config': name,
-                                    'file': binary,
-                                    'testname': test_name,
-                                    'timestamp': timestamp
-                                })
-                                print(f"{tool} {name}: {binary}::{test_name} finished at: {timestamp}")
-                        break
+                    # Extract timestamp from output
+                    lines = result.stdout.splitlines()
+                    for i, line in enumerate(lines):
+                        if re.search(r'==\d{2}:\d{2}:\d{2}:\d{2}\.\d+ +\d+== (Total:|Events)', line):
+                            if i > 0: 
+                                timestamp_line = lines[i - 1]
+                                timestamp_match = re.search(r'==(\d{2}:\d{2}:\d{2}:\d{2}\.\d{3})', timestamp_line)
+                                if timestamp_match:
+                                    timestamp = timestamp_match.group(1)
+                                    test_timestamps.append({
+                                        'config': name,
+                                        'file': binary,
+                                        'testname': test_name,
+                                        'timestamp': timestamp
+                                    })
+                                    print(f"{tool} {name}: {binary}::{test_name} finished at: {timestamp}")
+                            break
 
-                # Remove cargo compilation output file
-                for file_path in output_dir.glob(f"{name}.{binary}.{safe_name}.{tool}.out.*"):
-                    try:
-                        with open(file_path, 'r') as f:
-                            file_lines = f.readlines()
-                            def has_compile_cmd():
-                                if miri:
-                                    return not re.search(r'--crate-name\s+(\S+)', file_lines[cmd_line])
+                    # Remove cargo compilation output file
+                    for file_path in output_dir.glob(f"{name}.{binary}.{safe_name}.{tool}.out.*"):
+                        try:
+                            with open(file_path, 'r') as f:
+                                file_lines = f.readlines()
+                                def has_compile_cmd():
+                                    if miri:
+                                        return not re.search(r'--crate-name\s+(\S+)', file_lines[cmd_line])
+                                    else:
+                                        return "cargo test" in file_lines[cmd_line]
+
+                                if has_compile_cmd():
+                                    file_path.unlink()
                                 else:
-                                    return "cargo test" in file_lines[cmd_line]
-
-                            if has_compile_cmd():
-                                file_path.unlink()
-                            else:
-                                new_name = output_dir / f"{name}.{binary}.{safe_name}.{tool}.out"
-                                file_path.rename(new_name)
-                    except Exception as e:
-                        print(f"Error processing {file_path}: {e}")
+                                    new_name = output_dir / f"{name}.{binary}.{safe_name}.{tool}.out"
+                                    file_path.rename(new_name)
+                        except Exception as e:
+                            print(f"Error processing {file_path}: {e}")
     
-    miri = True
     miri_skip = "*/rustc"
     miri_skip_by_arg = "'--crate-type','-vV','--print','--format-version','--error-format=json'"
     
@@ -156,7 +186,7 @@ def main():
 
     print(f"\n[PHASE 2/3] Running cargo miri test for all tests")
     iterate_tests("miri",
-                  miri, 
+                  True, 
                   miri_skip,
                   miri_skip_by_arg, 
                   "export MIRIFLAGS=\"-Zmiri-disable-data-race-detector -Zmiri-disable-validation\" && ")
@@ -164,7 +194,7 @@ def main():
     
     print(f"\n[PHASE 3/3] Running cargo miri test (tree-borrows) for all tests")
     iterate_tests("miri-tree",
-                  miri, 
+                  True, 
                   miri_skip,
                   miri_skip_by_arg, 
                   "export MIRIFLAGS=\"-Zmiri-disable-data-race-detector -Zmiri-disable-validation -Zmiri-tree-borrows\" && ")

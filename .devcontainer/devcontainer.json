@@ -6,7 +6,8 @@
 		"context": ".."
 	},
       "runArgs": [
-    "--memory=32gb"
+    "--memory=32gb",
+	"--cap-add=SYS_ADMIN", "--cap-add=PERFMON", "--privileged"
   ],
 	// Mount SSH folder
 	"mounts": [
@@ -25,7 +26,8 @@
 			"settings": {},
 			"extensions": [
 				"rust-lang.rust-analyzer",
-				"ms-python.python"
+				"ms-python.python",
+				"ReprEng.csv"
 				// ,"ms-vscode.cpptools"
 			]
 		}

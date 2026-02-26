@@ -6,6 +6,7 @@ use crate::utils::*;
 use dhat::Dhat;
 mod dhat;
 mod utils;
+mod callgrind;
 
 // A simplified representation of a ProgramPoint from DHAT
 struct PP {
@@ -51,6 +52,7 @@ struct CSVLine {
     insert_allocation: String,
     new_allocation: String,
     grow_amortized: String,
+    grow_one: String,
     finish_grow: String,
     add_name: String,
     tree_new: String,
@@ -87,7 +89,7 @@ impl From<&str> for TestParams {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let outputs_dir = "/workspaces/miri-study/profiling/getrandom-outputs/dhat";
+    let outputs_dir = "/workspaces/miri-study/profiling/libc-outputs/dhat";
     process_dhat_folder(outputs_dir)?;
     Ok(())
 }
@@ -103,6 +105,7 @@ fn log_fn_stats(dhat: &Dhat, test_params: TestParams) -> Result<CSVLine, Box<dyn
     // Children of insert_allocation:    
     let new_allocation = get_fn_stats(&points, &"new_allocation".to_string()).to_csv();
     let grow_amortized = get_fn_stats(&points, &"grow_amortized".to_string()).to_csv();
+    let grow_one = get_fn_stats(&points, &"grow_one".to_string()).to_csv();
     let finish_grow = get_fn_stats(&points, &"finish_grow".to_string()).to_csv();
     let add_name = get_fn_stats(&points, &"add_name".to_string()).to_csv();
     let tree_new = get_fn_stats(&points, &"Tree>::new".to_string()).to_csv();
@@ -113,11 +116,11 @@ fn log_fn_stats(dhat: &Dhat, test_params: TestParams) -> Result<CSVLine, Box<dyn
     let perform_transition = get_fn_stats(&points, &"perform_transition".to_string()).to_csv();
     let miri_machine = get_fn_stats(&points, &"MiriMachine".to_string()).to_csv();
 
-    // let freq = get_most_freq_fns(&points);
-    // println!("Most frequent functions:");
-    // for (fn_name, count) in freq.iter().take(10) {
-    //     println!("{}: {} points", fn_name, count);
-    // }
+    let freq = get_most_freq_fns(&points, None);
+    println!("Most frequent functions:");
+    for (fn_name, count) in freq.iter().take(10) {
+        println!("{}: {} points", fn_name, count);
+    }
 
     let csv_line = CSVLine {
         config: test_params.config,
@@ -128,6 +131,7 @@ fn log_fn_stats(dhat: &Dhat, test_params: TestParams) -> Result<CSVLine, Box<dyn
         insert_allocation,
         new_allocation,
         grow_amortized,
+        grow_one,
         finish_grow,
         add_name,
         tree_new,

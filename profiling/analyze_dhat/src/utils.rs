@@ -5,15 +5,19 @@ use std::{
     collections::HashMap, fs::{File}, path::PathBuf, io::Write
 };
 
-pub fn get_most_freq_fns(points: &Vec<PP>) -> Vec<(String, usize)> {
+pub fn get_most_freq_fns(points: &Vec<PP>, filter: Option<&str>) -> Vec<(String, usize)> {
     let mut freq: HashMap<String, usize> = HashMap::new();
     for point in points {
-        if point.frames.iter().any(|f| f.contains("b_retag")) {
-            if let Some(frame) = point.frames.get(1) {
-                if let Some(last_part) = frame.split("::").last() {
-                    if let Some(top_lvl_fn) = last_part.split_once(char::is_whitespace) {
-                        freq.entry(top_lvl_fn.0.to_string()).and_modify(|count| *count += 1).or_insert(1);
-                    }
+        if let Some(name) = filter {
+            if point.frames.iter().any(|f| !f.contains(name)) {
+                continue
+            }
+        }
+
+        if let Some(frame) = point.frames.get(1) {
+            if let Some(last_part) = frame.split("::").last() {
+                if let Some(top_lvl_fn) = last_part.split_once(char::is_whitespace) {
+                    freq.entry(top_lvl_fn.0.to_string()).and_modify(|count| *count += 1).or_insert(1);
                 }
             }
         }
