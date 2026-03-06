@@ -1,5 +1,5 @@
 {
       "rust-analyzer.linkedProjects": [
-    "/workspaces/miri-study/profiling/analyze_dhat/Cargo.toml"
+    "/workspaces/miri-study/profiling/analyze-profiler-out/Cargo.toml"
   ],
 }

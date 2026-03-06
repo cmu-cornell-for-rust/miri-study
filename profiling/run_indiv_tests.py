@@ -101,7 +101,7 @@ def main():
                 if tool.lower() == "perf":
                     cmd = f"""{miri_flags} perf record \
                             --call-graph dwarf \
-                            -F 99 \
+                            -F 199 \
                             -e cycles \
                             -o {output_file}.dat \
                             -- cargo {miri_cmd} test {bin_arg} {test_name} -- --exact"""

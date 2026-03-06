@@ -3,3 +3,4 @@ profiling/*.*.*
 .DS_Store
 dhat.out.*
 callgrind.out.*
+profiling/outputs/*

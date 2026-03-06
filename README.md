@@ -6,7 +6,7 @@ This repository contains profiling data on Miri using external tools. See [cmu-c
 
 This month we worked on automating profiler execution and analysis.
 
-To execute a crate with a particular profiling tool, navigate to the [`profiling`](/profiling) folder and run this script. Outputs can be found in [`profiling/outputs/`](/profiling/outputs/):
+To execute a crate with a particular profiling tool, navigate to the [profiling](/profiling) folder and run this script. Outputs can be found in [profiling/outputs/](/profiling/outputs/):
 
 ```
 python3 run_indiv_tests.py <tool> <project>
