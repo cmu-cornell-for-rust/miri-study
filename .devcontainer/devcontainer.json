@@ -6,7 +6,6 @@
 		"context": ".."
 	},
       "runArgs": [
-    "--memory=32gb",
 	"--cap-add=SYS_ADMIN", "--cap-add=PERFMON", "--privileged"
   ],
 	// Mount SSH folder
@@ -23,7 +22,10 @@
 	},
 	"customizations": {
 		"vscode": {
-			"settings": {},
+			"settings": {
+				"python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
+				"python.terminal.activateEnvironment": true
+			},
 			"extensions": [
 				"rust-lang.rust-analyzer",
 				"ms-python.python",
@@ -31,5 +33,6 @@
 				// ,"ms-vscode.cpptools"
 			]
 		}
-	}
+	},
+	"postCreateCommand": "if [ -x .venv/bin/python ]; then .venv/bin/python -m pip install -U pip ipykernel matplotlib; fi"
 }

@@ -1,6 +1,10 @@
+**/outputs
+**/output
 target/
 profiling/*.*.*
 .DS_Store
 dhat.out.*
 callgrind.out.*
-profiling/outputs/*
+tracing/traces
+.devcontainer/notes.txt
+tracing/tree-timing/tree_timing

@@ -58,7 +58,6 @@ def main():
     if len(sys.argv) != 3:
         print("Usage: python3 run_indiv_tests.py <tool> <project_dir>")
         print("Example: python3 run_indiv_tests.py dhat libc-1.0.0")
-        print("         python3 run_indiv_tests.py callgrind libc-1.0.0")
         sys.exit(1)
     
     tool = sys.argv[1]
@@ -67,7 +66,7 @@ def main():
         cmd_line = 5
     elif tool == "callgrind":
         cmd_line = 4
-    elif tool == "perf":
+    elif tool == "perf" or tool == "samply":
         pass
     else:
         print(f"Unknown tool: {tool}")
@@ -103,6 +102,7 @@ def main():
                             --call-graph dwarf \
                             -F 199 \
                             -e cycles \
+                            --buildid-mmap \
                             -o {output_file}.dat \
                             -- cargo {miri_cmd} test {bin_arg} {test_name} -- --exact"""
                     result = run_command(cmd, project_dir, output_dir)
@@ -124,7 +124,11 @@ def main():
                         print(f"{tool} {name}: {binary}::{test_name} finished in: {duration_s}s")
                     else:
                         print(f"Duration string did not match expected format: {duration_string}")
-
+                elif tool.lower() == "samply":
+                    cmd = f"""{miri_flags} samply record \
+                            -o {output_file}.json \
+                            -- cargo {miri_cmd} test {bin_arg} {test_name} -- --exact"""
+                    print(f"{tool} {name}: {binary}::{test_name} finished")
                 else:
                     cmd = f"""{miri_flags} valgrind --tool={tool} \
                                 --time-stamp=yes \
@@ -183,20 +187,19 @@ def main():
                   "'--crate-type'", 
                   "")
 
-    print(f"\n[PHASE 2/3] Running cargo miri test for all tests")
-    iterate_tests("miri",
-                  True, 
-                  miri_skip,
-                  miri_skip_by_arg, 
-                  "export MIRIFLAGS=\"-Zmiri-disable-data-race-detector -Zmiri-disable-validation\" && ")
-
-    
-    print(f"\n[PHASE 3/3] Running cargo miri test (tree-borrows) for all tests")
+    print(f"\n[PHASE 2/3] Running cargo miri test (tree-borrows) for all tests")
     iterate_tests("miri-tree",
                   True, 
                   miri_skip,
                   miri_skip_by_arg, 
                   "export MIRIFLAGS=\"-Zmiri-disable-data-race-detector -Zmiri-disable-validation -Zmiri-tree-borrows\" && ")
+
+    print(f"\n[PHASE 3/3] Running cargo miri test for all tests (without borrowtracker)")
+    iterate_tests("miri",
+                  True, 
+                  miri_skip,
+                  miri_skip_by_arg, 
+                  "export MIRIFLAGS=\"-Zmiri-disable-data-race-detector -Zmiri-disable-validation -Zmiri-disable-stacked-borrows\" && ")
     
     # Write timestamps to CSV
     csv_path = output_dir / "timestamps.csv"

@@ -2,4 +2,5 @@
       "rust-analyzer.linkedProjects": [
     "/workspaces/miri-study/profiling/analyze-profiler-out/Cargo.toml"
   ],
+  "python-envs.defaultEnvManager": "ms-python.python:system",
 }
