@@ -1,9 +1,0 @@
-[rust]
-debuginfo-level = 2
-frame-pointers = true
-debug = true
-debug-assertions = true
-remap-debuginfo = false
-
-[target.aarch64-unknown-linux-gnu]
-split-debuginfo = "off"

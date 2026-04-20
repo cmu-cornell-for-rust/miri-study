@@ -1,6 +1,7 @@
 **/outputs
 **/output
 target/
+crates/downloaded_crates
 profiling/*.*.*
 .DS_Store
 dhat.out.*
