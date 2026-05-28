@@ -7,8 +7,8 @@ SCRATCH="/scratch/user/u.mm346025"
 TEAM_SCRATCH="/scratch/group/p.cis260229.000"
 BASE_CARGO_HOME="$SCRATCH/.cargo"
 RUSTUP_HOME="$SCRATCH/.rustup"
-MIRIFLAGS="-Zmiri-disable-alignment-check -Zmiri-disable-data-race-detector -Zmiri-disable-validation -Zmiri-tree-borrows -Zmiri-ignore-leaks"
-BUILDS=("base" "lazy" "lazy2")
+MIRIFLAGS="-Zmiri-disable-alignment-check -Zmiri-disable-data-race-detector -Zmiri-disable-validation -Zmiri-disable-stacked-borrows -Zmiri-ignore-leaks"
+BUILDS=("base")
 CSV="$(pwd)/results.csv"
 CRATES_ROOT="$(pwd)"
 
@@ -43,12 +43,11 @@ JOBSCRIPT="$CRATES_ROOT/_sbatch_all.sh"
 
 cat > "$JOBSCRIPT" <<'HEADER'
 #!/usr/bin/env bash
-#SBATCH --job-name=miri-all
+#SBATCH --job-name=dev-all
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem=16G
-#SBATCH --time=06:00:00
-#SBATCH --exclusive
+#SBATCH --time=02:00:00
 
 set -euo pipefail
 module load WebProxy
@@ -91,7 +90,6 @@ for BUILD in "${BUILDS[@]}"; do
 set -euo pipefail
 cd '${CRATE_PATH}'
 cargo clean
-rm -rf target
 cargo fetch
 cargo build
 if [[ '${CRATE}' == 'hashbrown-0.16.1' ]]; then

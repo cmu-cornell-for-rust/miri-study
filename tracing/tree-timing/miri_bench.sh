@@ -34,10 +34,11 @@ module load WebProxy
 singularity exec \
     --env CARGO_HOME="$CARGO_HOME" \
     --env RUSTUP_HOME="$RUSTUP_HOME" \
-    "$SIF" bash -c 'cargo miri setup'
+    "$SIF" bash -c '
 set -euo pipefail
 cd "${crate_path}"
 rm traces-* && rm events-*
+rm miri_* && rm -rf target
 cargo clean
 cargo fetch
 start=\$(date +%s)

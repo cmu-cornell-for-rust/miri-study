@@ -10,27 +10,41 @@ import matplotlib.ticker as ticker
 import numpy as np
 from pathlib import Path
 
-INPUT_CSV  = sys.argv[1] if len(sys.argv) > 1 else "inputs/results5.csv"
-OUTPUT_PNG = sys.argv[2] if len(sys.argv) > 2 else "outputs/runtimes5.png"
-CUTOFF = 60
+INPUT_CSV  = sys.argv[1] if len(sys.argv) > 1 else "inputs/results6.csv"
+OUTPUT_PNG = sys.argv[2] if len(sys.argv) > 2 else "outputs/runtimes6.png"
+CUTOFF = 500
 
 # -------------------------------------------------------------------
 # 1. Load data
 # -------------------------------------------------------------------
 data = defaultdict(lambda: defaultdict(list))
+build_order = []
+builds_seen = set()
 
 with open(INPUT_CSV, newline="") as f:
     reader = csv.DictReader(f)
     for row in reader:
+        build = row["build"]
+        if build not in builds_seen:
+            builds_seen.add(build)
+            build_order.append(build)
         data[row["crate"]][row["build"]].append(
-            (row["status"], int(row["elapsed_seconds"]) / 1000.0)
+            (row["status"], float(row["elapsed_seconds"]))
         )
+
+# Derive build labels from the CSV in observed order
+build_labels = list(build_order)
+if not build_labels:
+    print("No builds found in CSV.")
+    sys.exit(1)
+
+# Choose the reference/base build: prefer 'base' if present, otherwise fallback to first observed build
+base_label = "base" if "base" in build_labels else build_labels[0]
 
 # -------------------------------------------------------------------
 # 2. Keep only crates that succeeded in every run for all three builds
 # -------------------------------------------------------------------
 eligible = {}
-build_labels = ["base", "lazy", "lazy2"]
 for crate, builds in data.items():
     if any(build not in builds for build in build_labels):
         continue
@@ -98,7 +112,7 @@ out_high = parent / f"{stem}_high{suffix}"
 palette = plt.get_cmap('tab10').colors
 if len(build_labels) > len(palette):
     palette = plt.get_cmap('tab20').colors
-colors = {build: palette[i % len(palette)] for i, build in enumerate(build_labels)}
+colors = {build: palette[(i + (1 if i >= 3 else 0)) % len(palette)] for i, build in enumerate(build_labels)}
 labels = {build: build.replace('_', ' ').title() for build in build_labels}
 
 # Bar width per-build within a group (group occupies ~80% of tick)
@@ -132,7 +146,6 @@ def print_runtime_stats(group_crates, group_label):
             f"mean={stats['mean']:.3f}s, median={stats['median']:.3f}s, "
             f"std={stats['std']:.3f}s, min={stats['min']:.3f}s, max={stats['max']:.3f}s"
         )
-
 
 def print_paired_stats(group_crates, group_label):
     print(f"\n── {group_label} paired comparisons ──")
@@ -196,24 +209,11 @@ def make_plot(group_crates, title, out_path):
         ax.bar(x + offset, means, bar_width,
                label=labels[build], color=colors[build], alpha=0.85, zorder=2)
 
-        for j, crate in enumerate(group_crates):
-            pts = trimmed[crate][build]
-            ax.scatter(
-                np.full(len(pts), x[j] + offset),
-                pts,
-                color="white",
-                edgecolors=colors[build],
-                linewidths=1.2,
-                s=40,
-                zorder=4,
-                clip_on=False,
-            )
-
     ax.set_xticks(x)
-    ax.set_xticklabels(group_crates, rotation=40, ha="right", fontsize=12)
-    ax.set_ylabel("Time (s)", fontsize=12)
-    ax.set_title(title, fontsize=14)
-    ax.legend(fontsize=12)
+    ax.set_xticklabels(group_crates, rotation=40, ha="right", fontsize=10)
+    ax.set_ylabel("Time (s)", fontsize=11)
+    ax.set_title(title, fontsize=12)
+    ax.legend(fontsize=10)
     ax.yaxis.set_minor_locator(ticker.AutoMinorLocator())
     ax.grid(axis="y", which="major", linestyle="--", alpha=0.4, zorder=0)
     ax.grid(axis="y", which="minor", linestyle=":",  alpha=0.2, zorder=0)

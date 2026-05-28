@@ -3,10 +3,10 @@ import csv
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-INPUT_FILE   = "outputs/output.csv"
-SPLIT_FILE   = "outputs/output_split.csv"
-OUTPUT_NORM  = "event_durations_normalized.png"
-OUTPUT_RAW   = "event_durations_raw.png"
+INPUT_FILE   = "inputs/output.csv"
+SPLIT_FILE   = "inputs/output_split.csv"
+OUTPUT_NORM  = "outputs/event_durations_normalized.png"
+OUTPUT_RAW   = "outputs/event_durations_raw.png"
 
 SPLIT_EVENTS = ["alloc", "reborrow", "read", "write", "visits", "pruned"]
 EVENT_LABELS = ["alloc", "reborrow", "read", "write", "visits", "GC", "pruned"]

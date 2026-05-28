@@ -1,5 +1,7 @@
 **/outputs
 **/output
+**/inputs
+**/input
 target/
 crates/downloaded_crates
 profiling/*.*.*
@@ -9,3 +11,4 @@ callgrind.out.*
 tracing/traces
 .devcontainer/notes.txt
 tracing/tree-timing/tree_timing
+!tracing/tree-size-dist/outputs
