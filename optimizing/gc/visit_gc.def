@@ -1,0 +1,57 @@
+Bootstrap: docker
+From: ubuntu:25.04
+
+%environment
+    export DEBIAN_FRONTEND=noninteractive
+    export PATH="/root/.cargo/bin:$PATH"
+
+%post
+    set -eux
+    export DEBIAN_FRONTEND=noninteractive
+
+    # ── System packages ───────────────────────────────────────────────
+    # Lean set: just what `./miri install` needs to compile + link.
+    apt-get update && apt-get install -y \
+        build-essential \
+        ca-certificates \
+        curl \
+        git \
+        pkg-config \
+        libssl-dev \
+        clang \
+        && rm -rf /var/lib/apt/lists/*
+
+    # ── Use clang as default C/C++ compiler (optional) ─────────────────
+    update-alternatives --install /usr/bin/cc  cc  /usr/bin/clang   100
+    update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++ 100
+
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+        | sh -s -- -y \
+            --default-toolchain nightly-2026-03-12 \
+            --profile minimal \
+            --component rust-src \
+            --component rustc-dev
+    . "$HOME/.cargo/env"
+
+    # ── Clone the fork and build Miri from source ──────────────────────
+    git clone --branch lazy-gc https://github.com/cmu-cornell-for-rust/rust.git /opt/rust
+    cd /opt/rust/src/tools/miri
+    ./miri install
+
+    # ── Make the pinned toolchain the container default ────────────────
+    rustup default "$(rustup show active-toolchain | awk '{print $1}')"
+
+    # ── Pre-build the Miri sysroot so the image runs offline ───────────
+    # (Remove if you'd rather build it lazily on first `cargo miri` run.)
+    cargo miri setup
+
+%runscript
+    exec "$@"
+
+%help
+    Apptainer/Singularity container with:
+      • Ubuntu 25.04 + C/C++ toolchain (clang as default cc/c++)
+      • rustup, with the exact nightly pinned by the Miri fork
+      • Custom Miri (cmu-cornell-for-rust/miri @ ef278a4) built from
+        source via `./miri install` into /root/.cargo/bin
+      • Miri std sysroot pre-built (cargo miri setup)

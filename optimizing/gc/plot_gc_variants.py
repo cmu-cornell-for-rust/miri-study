@@ -10,8 +10,8 @@ import matplotlib.ticker as ticker
 import numpy as np
 from pathlib import Path
 
-INPUT_CSV  = sys.argv[1] if len(sys.argv) > 1 else "inputs/results6.csv"
-OUTPUT_PNG = sys.argv[2] if len(sys.argv) > 2 else "outputs/runtimes6.png"
+INPUT_CSV  = sys.argv[1] if len(sys.argv) > 1 else "inputs/results7.csv"
+OUTPUT_PNG = sys.argv[2] if len(sys.argv) > 2 else "outputs/runtimes7.png"
 CUTOFF = 500
 
 # -------------------------------------------------------------------
@@ -213,7 +213,7 @@ def make_plot(group_crates, title, out_path):
     ax.set_xticklabels(group_crates, rotation=40, ha="right", fontsize=10)
     ax.set_ylabel("Time (s)", fontsize=11)
     ax.set_title(title, fontsize=12)
-    ax.legend(fontsize=10)
+    ax.legend(fontsize=10, loc='upper left')
     ax.yaxis.set_minor_locator(ticker.AutoMinorLocator())
     ax.grid(axis="y", which="major", linestyle="--", alpha=0.4, zorder=0)
     ax.grid(axis="y", which="minor", linestyle=":",  alpha=0.2, zorder=0)
@@ -238,11 +238,11 @@ print_speedup_stats(high_crates, f"High overhead (≥{CUTOFF}s)")
 
 make_plot(
     low_crates,
-    f"End-to-End Runtime: Base Miri vs Lazy Allocator",
+    f"End-to-End Runtime: Base Miri vs Lazy Allocator vs visit GC",
     out_low,
 )
 make_plot(
     high_crates,
-    f"End-to-End Runtime: Base Miri vs Lazy Allocator",
+    f"End-to-End Runtime: Base Miri vs Lazy Allocator vs visit GC",
     out_high,
 )

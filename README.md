@@ -18,6 +18,7 @@ This repo contains post-processing and analysis scripts for profiling, tracing, 
 │   ├── tree-size-dist
 │   └── tree-timing
 ├── optimizing
+│   ├── gc
 │   └── lazy-alloc
 └── README.md
 ```
